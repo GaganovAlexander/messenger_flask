@@ -1,4 +1,4 @@
-from backend.db.create_conn import conn, cur
+from backend.db import conn, cur
 
 from psycopg2 import Binary
 

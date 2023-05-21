@@ -1,4 +1,4 @@
-from backend.db.create_conn import conn, cur 
+from backend.db import conn, cur 
 from backend.db.users import get_by_username
 
 def add_token(username: str, token: str) -> None:
