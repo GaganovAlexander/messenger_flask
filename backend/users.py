@@ -1,11 +1,12 @@
 from flask import request, Response
 
+from configs import MAIN_ROUTE
 from backend import app
 import backend.db as db
 from backend.utils import generate_autorization_token, hash_password
 
 
-@app.route('/api/messenger/user', methods=['PUT', 'POST', 'PATCH', 'DELETE'])
+@app.route(MAIN_ROUTE + '/user', methods=['PUT', 'POST', 'PATCH', 'DELETE'])
 def user():
     method = request.method
     data = request.json
@@ -47,17 +48,16 @@ def user():
             
     elif method == 'DELETE':
         if user_id:
-            db.delete_user(user_id)
+            db.users.delete(user_id)
             return {'status': 0}, 200
         return {'status': 1, 'error': 'you are not authorized'}, 400
 
 
-@app.get('/api/messenger/users')
+@app.get(MAIN_ROUTE + '/users')
 def users():
     return db.users.get_all()
 
-
-@app.route('/api/messenger/profile', methods=['PUT', 'GET', 'DELETE'])
+@app.route(MAIN_ROUTE + '/profile', methods=['PUT', 'GET', 'DELETE'])
 def profile():
     user_id = db.authorization.get_user_id(request.headers.get('authorization-token'))
     if not user_id:
@@ -84,26 +84,5 @@ def profile():
             return {'status': 0, item: db.users.get_by_id(user_id).get(item)}, 200
         elif method == 'DELETE':
             db.users.add_profile_item(user_id, item, None)
-
-    return {'status': 0}, 200
-
-
-@app.route('/api/messenger/chat', methods=['PUT', 'PATCH', 'DELETE'])
-def chat():
-    method = request.method
-    data = request.json
-    users = data.get('users')
-    chat_id = data.get('chat_id')
-    user_id = db.authorization.get_user_id(request.headers.get('authorization-token'))
-
-    if method == 'PUT':
-        users.append(user_id)
-        id = db.chats.create(list(set(users)))
-        return {'status': 0, 'id': id}
-    
-    elif method == 'PATCH':
-        db.chats.add_users(chat_id, users)
-    elif method == 'DELETE':
-        db.chats.delete(chat_id)
 
     return {'status': 0}, 200

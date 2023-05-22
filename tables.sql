@@ -26,9 +26,11 @@ CREATE TABLE IF NOT EXISTS chats (
     users INTEGER[] NOT NULL
 );
 CREATE TABLE IF NOT EXISTS messages (
+    id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT NOT NULL,
     sender INTEGER NOT NULL,
     send_time TIMESTAMP NOT NULL,
+    message TEXT NOT NULL,
     CONSTRAINT fk_chats 
         FOREIGN KEY (chat_id)
         REFERENCES chats(id),
